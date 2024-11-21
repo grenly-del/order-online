@@ -1,18 +1,24 @@
 // Get the client
-import mysql, {Connection} from 'mysql2/promise';
+import mongoose, { ConnectOptions } from 'mongoose';
 import { DB } from '../config';
-let connection: Connection
-export const connectDB =  async () => {
-// Create the connection to database
-    connection = await mysql.createConnection({
-    host: DB.DB_HOST,
-    user: DB.DB_USER,
-    database: DB.DB_NAME,
-    password: DB.DB_PASS,
-    port: Number(DB.DB_PORT)
-  })
- 
-  connection.connect().then((db) => console.log(`database connected to ${db.config.host} by user ${db.config.user}`))
+
+const port = DB.DB_PORT
+const host = DB.DB_HOST
+const name = DB.DB_NAME
+const pass = DB.DB_PASS
+const user = DB.DB_USER
+
+
+const url = `mongodb://${user}:${pass}@${host}:${port}/?directConnection=true&serverSelectionTimeoutMS=2000&authSource=admin&appName=mongosh+2.2.6`
+
+
+const connectDB =  async () => {
+  try{
+      await mongoose.connect(url)
+      console.log(`database connected to port ${port}`)
+  }catch(err) {
+    console.log(err)
+  }
 }
 
-export{connection}
+export {connectDB}
