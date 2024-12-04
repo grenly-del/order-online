@@ -9,7 +9,7 @@ const pass = DB.DB_PASS
 const user = DB.DB_USER
 
 
-const url = `mongodb://${user}:${pass}@${host}:${port}/?directConnection=true&serverSelectionTimeoutMS=2000&authSource=admin&appName=mongosh+2.2.6`
+const url = `mongodb://${user}:${pass}@${host}:${port}/${name}?directConnection=true&serverSelectionTimeoutMS=2000&authSource=admin&appName=mongosh+2.2.6`
 
 
 const connectDB =  async () => {
