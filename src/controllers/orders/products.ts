@@ -3,9 +3,16 @@ import { ProductsSchema, ProductType } from "../../config/validations/products"
 import productModel from "../../models/productModel"
 import { GenereteID } from "../../utils/genereteID"
 import { HTTP_STATUS_CODE } from "../../config/httpsCode"
+import type { dataImageType, CustomReqType } from "../../middleware/image/filterImage"
+import fs from 'fs'
 
-export const PostProducts = (req:Request, res:Response) => {
+
+export const PostProducts = (req:CustomReqType, res:Response) => {
     const {nama, harga, stok, jenis} = req.body
+    const newImage = req.newImage
+    const newFilePath = newImage?.newPath
+
+    // Validasi untuk setiap nilai request selain image
     const reqBaru:ProductType = {
         nama_produk: nama,
         jenis_produk: jenis,
@@ -15,8 +22,9 @@ export const PostProducts = (req:Request, res:Response) => {
     const result = ProductsSchema.safeParse(reqBaru)
     if(result.success) {
         const {nama_produk, harga_produk, jenis_produk, stok_produk} = result.data
-        if(jenis_produk.toLowerCase() == 'makanan') {
-            GenereteID("MA")
+        if(jenis_produk.toLowerCase() == 'makanan' || jenis_produk.toLowerCase() == 'minuman') {
+            let PrefixID = jenis_produk.toLowerCase() == 'makanan' ? "MA" :  "MI"
+            GenereteID(PrefixID)
             .then(idProduk => {
                 
                 new productModel({
@@ -25,7 +33,8 @@ export const PostProducts = (req:Request, res:Response) => {
                     harga_produk,
                     jenis_produk,
                     stok_produk,
-                    stok_terjual: 0
+                    stok_terjual: 0,
+                    image_produk: newImage?.newPath
                 })
                 .save()
                 .then((data) => {
@@ -35,6 +44,11 @@ export const PostProducts = (req:Request, res:Response) => {
                     })
                 })
                 .catch((err) => {
+                    if(newFilePath) {
+                        fs.unlinkSync(newImage?.newPath);
+                    }else {
+                        console.log('file path undefined')
+                    }
                     res.status(HTTP_STATUS_CODE.CONFLICT).json({
                         message: 'terjadi kesalahan',
                         error: err
@@ -43,33 +57,6 @@ export const PostProducts = (req:Request, res:Response) => {
                 
             })
             // console.log(ID)
-        }else if(jenis_produk.toLowerCase() == 'minuman') {
-            GenereteID("MI")
-            .then(idProduk => {
-                
-                    const newProduk = new productModel({
-                        id_produk: idProduk,
-                        nama_produk,
-                        harga_produk,
-                        jenis_produk,
-                        stok_produk,
-                        stok_terjual: 0
-                    })
-                    newProduk.save()
-                    .then(data => {
-                        res.status(HTTP_STATUS_CODE.CREATED).json({
-                            message: 'Berhasil menambahkan produk',
-                            nama_produk: data.nama_produk
-                        })
-                    })
-                    .catch(err => {
-                        res.status(HTTP_STATUS_CODE.CONFLICT).json({
-                            message: 'terjadi kesalahan',
-                            error: err
-                        })
-                    })
-                
-            })
         }else {
             res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({message: 'jenis tersebut tidak ada'})
         }
