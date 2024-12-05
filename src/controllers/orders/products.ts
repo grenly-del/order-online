@@ -70,7 +70,7 @@ export const PostProducts = (req:Request, res:Response) => {
 }
 
 export const GetAllProducts = async (req:Request, res:Response) => {
-    const Products = await productModel.find()
+    const Products = await productModel.find().select('-_id -_v')
     res.status(HTTP_STATUS_CODE.OK).json({
         message: 'Berhasil',
         data: Products
