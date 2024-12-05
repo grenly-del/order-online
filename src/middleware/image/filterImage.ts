@@ -20,7 +20,7 @@ export const filterImg = async (req:CustomReq, res:Response, next:NextFunction) 
     console.log(namePath)
     let dataImage = {
       namePath: namePath,
-      img: [],
+      img: [] as Express.Multer.File[],
       newPath: ''
     };
   
