@@ -1,12 +1,22 @@
 import {Request, Response, NextFunction} from 'express'
+import fs from 'fs'
+import sharp from 'sharp';
+import path from 'path';
 
+interface dataImageType {
+  namePath: String,
+  img: any,
+  newPath: String
+}
+interface CustomReq extends Request {
+  newImage?: dataImageType 
+  files?: Express.Multer.File[];
+}
 // ================= MEMFILTER IMAGE DAN MENGUBAH DIRECTORI IMAGE YANG BARU ===============
-export const filterImg = async (req:Request, res:Response, next:NextFunction) => {
-    const files = req.files;
-    let newImage;
-    const baseurl = req.baseUrl;
-    const arr = baseurl.split('/');
-    const namePath = arr[3];
+export const filterImg = async (req:CustomReq, res:Response, next:NextFunction) => {
+    const files = req.files as Express.Multer.File[];
+    let newImage
+    const namePath = req.body.jenis.toLowerCase()
     console.log(namePath)
     let dataImage = {
       namePath: namePath,
@@ -15,19 +25,22 @@ export const filterImg = async (req:Request, res:Response, next:NextFunction) =>
     };
   
     await Promise.all(
-      files.map((file) => {
+      files?.map((file:any) => {
         const dest = file.destination;
         const imagePath = path.join(dest, file.filename);
         const buffImg = fs.readFileSync(imagePath);
         const newPath = `${dest}/${namePath}/${file.filename}`;
-  
-        const image = sharp(buffImg);
-        return image
+        console.log(buffImg)
+
+        sharp(buffImg)
           .withMetadata()
           .toBuffer()
-          .then((buffer) => {
+          .then((buffer:Buffer) => {
+            console.log(`new ${newPath}`)
             fs.writeFileSync(newPath, buffer);
             newImage = newPath;
+            console.log(`file`)
+            console.log(file)
             dataImage.img.push(file);
             dataImage.newPath = newPath
   

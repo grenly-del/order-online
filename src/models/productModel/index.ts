@@ -26,6 +26,10 @@ const ProductSchema = new Schema({
     jenis_produk: {
         type: String,
         required: true
+    },
+    image_produk: {
+        type:String,
+        required: false
     }
 })
 
