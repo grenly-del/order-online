@@ -5,6 +5,11 @@ const QRCodeDataSchema = new Schema({
         type: Number,
         required: true,
         unique: true
+    },
+    url_qrcode: {
+        type:String,
+        required: true,
+        unique: true
     }
 })
 
