@@ -12,12 +12,12 @@ export interface dataImageType {
 }
 
 export interface CustomReqType extends Request {
-  newImage?: dataImageType | undefined;
+  newImage?: dataImageType;
   files?: Express.Multer.File[];
 }
 
 // ================= MEMFILTER IMAGE DAN MENGUBAH DIRECTORI IMAGE YANG BARU ===============
-export const filterImg = async (req: CustomReqType, res: Response, next: NextFunction) => {
+export const filterImg = async (req: Request, res: Response, next: NextFunction) => {
   const files = req.files as Express.Multer.File[];
   const namePath = req.body.jenis?.toLowerCase();
 

@@ -7,7 +7,7 @@ import type { dataImageType, CustomReqType } from "../../middleware/image/filter
 import fs from 'fs'
 
 
-export const PostProducts = (req:CustomReqType, res:Response) => {
+export const PostProducts = (req:Request, res:Response) => {
     const {nama, harga, stok, jenis} = req.body
     const newImage = req.newImage
     const newFilePath = newImage?.newPath
@@ -69,7 +69,11 @@ export const PostProducts = (req:CustomReqType, res:Response) => {
 
 }
 
-export const GetAllProducts = (req:Request, res:Response) => {
-    res.send('test')
+export const GetAllProducts = async (req:Request, res:Response) => {
+    const Products = await productModel.find()
+    res.status(HTTP_STATUS_CODE.OK).json({
+        message: 'Berhasil',
+        data: Products
+    })
 }
 
