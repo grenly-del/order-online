@@ -8,6 +8,7 @@ export interface dataImageType {
   namePath: string;
   img: Express.Multer.File[];
   newPath: string;
+  newUrlPath: string
 }
 
 export interface CustomReqType extends Request {
@@ -31,16 +32,20 @@ export const filterImg = async (req: CustomReqType, res: Response, next: NextFun
   let dataImage: dataImageType = {
     namePath: namePath,
     img: [],
-    newPath: ''
+    newPath: '',
+    newUrlPath: ''
   };
 
   try {
     await Promise.all(
       files.map(async (file) => {
         const dest = file.destination;
+        let newArr = dest.split('/')
         const imagePath = path.join(dest, file.filename);
         const buffImg = fs.readFileSync(imagePath);
         const newPath = `${dest}/${namePath}/${file.filename}`;
+        // console.log(imagePath)
+        const NewUrlForImg = `${newArr[1]}/${namePath}/${file.filename}`
 
         // buat folder baru jika tidak ada
         if (!fs.existsSync(`${dest}/${namePath}`)) {
@@ -55,6 +60,7 @@ export const filterImg = async (req: CustomReqType, res: Response, next: NextFun
             fs.writeFileSync(newPath, buffer);
             dataImage.img.push(file);
             dataImage.newPath = newPath;
+            dataImage.newUrlPath = NewUrlForImg
           });
 
         // Delete the old image

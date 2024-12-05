@@ -34,7 +34,7 @@ export const PostProducts = (req:CustomReqType, res:Response) => {
                     jenis_produk,
                     stok_produk,
                     stok_terjual: 0,
-                    image_produk: newImage?.newPath
+                    image_produk: newImage?.newUrlPath
                 })
                 .save()
                 .then((data) => {
