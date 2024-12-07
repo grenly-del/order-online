@@ -1,5 +1,5 @@
 import {Schema, model} from "mongoose";
-import type { OrderType, ListPesananType } from "../validations/order";
+import { OrderType, ListPesananType } from "../../config/validations/order";
 
 const listPesananSchema = new Schema<ListPesananType>({ 
     nama_pesanan: String,

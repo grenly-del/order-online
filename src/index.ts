@@ -32,7 +32,7 @@ app.get('/', async (req:Request, res:Response) => {
 })
 
 
-app.use('/api', RoutesApp)
+app.use('/api/v1', RoutesApp)
 
 
 
