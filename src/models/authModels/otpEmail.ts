@@ -10,7 +10,15 @@ const OTPSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
         required: true
+    },
+    expiresAt: {
+        type: Date,
+        required: true,
     }
+}, {
+    timestamps: true
 })
 
+// Otomatis hapus data setelah Expired
+OTPSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 export default model('otp', OTPSchema)

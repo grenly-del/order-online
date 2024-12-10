@@ -32,10 +32,14 @@ export const RegisPost = async (req:Request, res:Response) => {
             const otpRandom = Math.floor(Math.random()*9999-1000 + 1) + 1000
             sendEmail(result.data.email, otpRandom)
 
+            // Membuat ExpireDate
+            const expireDate = new Date()
+            expireDate.setMinutes(expireDate.getMinutes()+1) // 1 Menit Expire OTP
             // Simpan OTP sesuai dengan ID Pengguna
             await new OTPEmailModel({
                 otp_code: otpRandom,
-                user_id: newUser._id
+                user_id: newUser._id,
+                expiresAt: expireDate
             }).save()
 
             // Kirim Response Berhasil
@@ -60,6 +64,38 @@ export const RegisPost = async (req:Request, res:Response) => {
     }
 }
 
+
+
+
+
+export const GetOTPEmail = async (req:Request, res:Response) => {
+
+    // Ambil User Berdasarkan Email
+    console.log(req.body)
+    const Users = await UsersModel.findOne({email: req.body.email})
+    console.log(Users)
+    if(Users == null) {
+        console.log('first')
+        res.status(HTTP_STATUS_CODE.NOT_FOUND).json({message: "Gagal", error: 'Email tidak ditemukan'})
+    }else {
+        
+        // Send Email OTP
+        const otpRandom = Math.floor(Math.random()*9999-1000 + 1) + 1000
+        sendEmail(req.body.email, otpRandom)
+    
+        // Membuat ExpireDate
+        const expireDate = new Date()
+        expireDate.setMinutes(expireDate.getMinutes()+1) // 1 Menit Expire OTP
+        // Simpan OTP sesuai dengan ID Pengguna
+        await new OTPEmailModel({
+            otp_code: otpRandom,
+            user_id: Users._id,
+            expiresAt: expireDate
+        }).save()
+    }
+    
+
+}
 
 export const LoginGet = (req:Request, res:Response) => {
     res.send('login')

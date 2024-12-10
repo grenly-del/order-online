@@ -7,6 +7,7 @@ import cors from 'cors'
 import helmet from 'helmet'
 import RoutesApp from './routes'
 import path from 'path'
+import bodyParser from 'body-parser'
 
 
 // Connect to Database
@@ -14,8 +15,8 @@ connectDB()
 
 
 // Middleware 
-app.use(express.json())
-app.use(express.urlencoded({extended: true}))
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended: true}))
 app.use(cors({
     origin: '*',
     methods: ['GET', 'POST']
