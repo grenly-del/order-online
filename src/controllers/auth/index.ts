@@ -6,6 +6,7 @@ import { HTTP_STATUS_CODE } from "../../config/httpsCode"
 import { GenereteID } from "../../utils/genereteID"
 import { sendEmail } from "../../config/email"
 import bcrypt from 'bcrypt'
+import { log } from "console"
 
 
 export const RegisPost = async (req:Request, res:Response) => {
@@ -124,6 +125,46 @@ export const CekOTPEmail = async (req:Request, res:Response) => {
     }
 }
 
-export const LoginGet = (req:Request, res:Response) => {
-    res.send('login')
+export const LoginPost = async (req:Request, res:Response) => {
+    const {email, password} = req.body
+    console.log(email)
+    try{
+
+        // Cek email
+        const DataUser = await UsersModel.findOne({email: email})
+        console.log(DataUser)
+        // Cek Status Akun
+        if(!DataUser || DataUser.status == false) {
+            res.status(HTTP_STATUS_CODE.NOT_FOUND).json({
+                message: 'Gagal',
+                error: 'Akun tidak di temui'
+            })
+        }else {
+            // Cek Password
+            const passValid = bcrypt.compareSync(password, DataUser.password)
+            
+            if(passValid) {
+                res.status(HTTP_STATUS_CODE.OK).json({
+                    message: 'Berhasil',
+                    data: {
+                        userId: DataUser.id_pengguna,
+                        username: DataUser.nama_pengguna
+                    }
+                })
+            }else{
+                res.status(HTTP_STATUS_CODE.EXPECTATION_FAILED).json({
+                    message: 'Gagal',
+                    error: 'Password salah'
+                })
+            }
+        }
+
+    }
+    catch(err) {
+        res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
+            message: 'Gagal',
+            error: err
+        })
+    }
+
 }
