@@ -15,5 +15,8 @@ const DB = {
     DB_PASS: process.env.DB_PASS
 }
 
+const SECRET = {
+    JWT_SECRET_KEY: process.env.SECRET_KEY
+}
 
-export {APPS, DB}
+export {APPS, DB, SECRET}

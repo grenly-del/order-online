@@ -6,7 +6,8 @@ import { HTTP_STATUS_CODE } from "../../config/httpsCode"
 import { GenereteID } from "../../utils/genereteID"
 import { sendEmail } from "../../config/email"
 import bcrypt from 'bcrypt'
-import { log } from "console"
+import { genereteToken } from "../../utils/genereteTokenJwt"
+import TokenJWTModel from '../../models/authModels/tokenJwt'
 
 
 export const RegisPost = async (req:Request, res:Response) => {
@@ -144,11 +145,23 @@ export const LoginPost = async (req:Request, res:Response) => {
             const passValid = bcrypt.compareSync(password, DataUser.password)
             
             if(passValid) {
+
+                // Buat Token JWT
+
+                const tokenJwt = await genereteToken(DataUser.id_pengguna)
+                const expireDate = new Date()
+                expireDate.setMinutes(expireDate.getDate()+1) 
+                await new TokenJWTModel({
+                    token_jwt: tokenJwt,
+                    expiresAt: expireDate
+                }).save()
+
                 res.status(HTTP_STATUS_CODE.OK).json({
                     message: 'Berhasil',
                     data: {
-                        userId: DataUser.id_pengguna,
-                        username: DataUser.nama_pengguna
+                        tokenJwt: tokenJwt,
+                        username: DataUser.nama_pengguna,
+
                     }
                 })
             }else{

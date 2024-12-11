@@ -6,6 +6,8 @@ declare global {
     interface Request {
       files?: File[] | { [fieldname: string]: File[] };
       newImage?: dataImageType;
+      userId?: string
     }
   }
+  const token:string | undefined
 }
