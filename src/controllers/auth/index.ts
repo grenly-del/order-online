@@ -59,7 +59,6 @@ export const RegisPost = async (req:Request, res:Response) => {
        }
 
     }else {
-        console.log(result.error)
         // Berikan response Error
         res.status(HTTP_STATUS_CODE.BAD_REQUEST).json({
             message: "Gagal",
@@ -75,9 +74,8 @@ export const RegisPost = async (req:Request, res:Response) => {
 export const GetOTPEmail = async (req:Request, res:Response) => {
 
     // Ambil User Berdasarkan Email
-    console.log(req.body)
     const Users = await UsersModel.findOne({email: req.body.email})
-    console.log(Users)
+    
     if(Users == null) {
         console.log('first')
         res.status(HTTP_STATUS_CODE.NOT_FOUND).json({message: "Gagal", error: 'Email tidak ditemukan'})
@@ -116,7 +114,7 @@ export const CekOTPEmail = async (req:Request, res:Response) => {
             })
         }else {
             const newUsers = await UsersModel.findOneAndUpdate({_id: UserOTPValid?.user_id}, {$set : {status: true}},  { new: true })
-            console.log(newUsers)
+            
             await OTPEmailModel.findOneAndDelete({user_id: newUsers?._id})
             res.send('berhasil')
         }
